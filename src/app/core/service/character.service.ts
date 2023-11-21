@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Character, CharacterInfo } from '../models/character_model';
-import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { Observable } from 'rxjs/internal/Observable';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
@@ -30,22 +29,11 @@ export class CharacterService {
   */
 
   private apiURL = 'https://rickandmortyapi.com/api'
-  private _characterSubject:BehaviorSubject<CharacterInfo[]> = new BehaviorSubject([]);
-  public character = this._characterSubject.asObservable();
-  
-  unsubscr;
   constructor(private http: HttpClient) {
-    this.unsubscr = this.http.get<CharacterInfo[]>(this.apiURL + '/character').subscribe( data => {
-      const characters: CharacterInfo[] = data;
-      this._characterSubject.next(characters);
-    },
-    (error) => {
-      console.error('Error fetching characters:', error);
-    })
-   }
+  }
 
-  ngOnDestroy():void {
-    this.unsubscr();
+  getAllCharacter(): Observable<CharacterInfo[]> {
+    return this.http.get<CharacterInfo[]>(this.apiURL + '/character')
   }
 
   async getCharacterbyId(id:number): Promise<Character> {
